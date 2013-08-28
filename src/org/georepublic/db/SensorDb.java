@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import org.georepublic.bean.FloodData;
+import org.georepublic.bean.*;
 
 
 /**
@@ -69,14 +69,62 @@ public class SensorDb {
         return conn;
     }
 
-    public void insertFloodData( FloodData fd ) {
+    public void insertAsgData( StreamGauge fd ) {
         Connection conn = this.getConnection();
         PreparedStatement stmt = null;
         
         String pt  = "ST_PointFromText('POINT("+fd.getLon()+
                 " "+fd.getLat()+")',4326)";
         
-        String sql = "insert into sensor (name,time,value,lon,lat,the_geom) "+
+        String sql = "insert into asg (name,time,value,"+
+                "water_level_change,time_difference,"+
+                "lon,lat,the_geom) "+
+                "values(?,to_timestamp(?,'Mon DD, YYYY HH:MI AM'),?,?,?,?,?,"+
+                pt+") ";
+        
+        try {
+            stmt = conn.prepareStatement(sql);
+            
+            stmt.setString(1, fd.getName());
+            stmt.setString(2, fd.getTime());
+            stmt.setDouble(3, fd.getValue());
+            stmt.setDouble(4, fd.getWater_level_change());
+            stmt.setDouble(5, fd.getTime_difference());
+            stmt.setDouble(6, fd.getLon());
+            stmt.setDouble(7, fd.getLat());
+            
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+           //e.printStackTrace();
+        }
+        
+        try {
+            if( stmt != null )
+                stmt.close();
+        }
+        catch (Exception e) {
+            ;
+        }
+        
+        try {
+            if( conn != null )
+                conn.close();
+        }
+        catch (Exception e) {
+            ;
+        }
+
+    }
+
+    public void insertArgData( RainGauge fd ) {
+        Connection conn = this.getConnection();
+        PreparedStatement stmt = null;
+        
+        String pt  = "ST_PointFromText('POINT("+fd.getLon()+
+                " "+fd.getLat()+")',4326)";
+        
+        String sql = "insert into arg (name,time,value,"+
+                "lon,lat,the_geom) "+
                 "values(?,to_timestamp(?,'Mon DD, YYYY HH:MI AM'),?,?,?,"+
                 pt+") ";
         
@@ -90,9 +138,105 @@ public class SensorDb {
             stmt.setDouble(5, fd.getLat());
             
             stmt.executeUpdate();
+        } catch (SQLException e) {
+          // e.printStackTrace();
+        }
+        
+        try {
+            if( stmt != null )
+                stmt.close();
+        }
+        catch (Exception e) {
+            ;
+        }
+        
+        try {
+            if( conn != null )
+                conn.close();
+        }
+        catch (Exception e) {
+            ;
+        }
+
+    }
+    
+    public void insertAwsData( WaterGauge fd ) {
+        Connection conn = this.getConnection();
+        PreparedStatement stmt = null;
+        
+        String pt  = "ST_PointFromText('POINT("+fd.getLon()+
+                " "+fd.getLat()+")',4326)";
+        
+        String sql = "insert into aws (name,time,"+
+                "temp,humi,pres,rain,"+
+                "lon,lat,the_geom) "+
+                "values(?,to_timestamp(?,'Mon DD, YYYY HH:MI AM'),?,?,?,?,?,?,"+
+                pt+") ";
+        
+        try {
+            stmt = conn.prepareStatement(sql);
+            
+            stmt.setString(1, fd.getName());
+            stmt.setString(2, fd.getTime());
+            stmt.setDouble(3, fd.getTemp());
+            stmt.setDouble(4, fd.getHumi());
+            stmt.setDouble(5, fd.getPres());
+            stmt.setDouble(6, fd.getRain());
+            stmt.setDouble(7, fd.getLon());
+            stmt.setDouble(8, fd.getLat());
+            
+            stmt.executeUpdate();
+            stmt.executeUpdate(); 
+        } catch (SQLException e) {
+           //e.printStackTrace();
+        }
+        
+        try {
+            if( stmt != null )
+                stmt.close();
+        }
+        catch (Exception e) {
+            ;
+        }
+        
+        try {
+            if( conn != null )
+                conn.close();
+        }
+        catch (Exception e) {
+            ;
+        }
+
+    }
+    
+
+
+    public void insertTdData( StreamGauge fd ) {
+        Connection conn = this.getConnection();
+        PreparedStatement stmt = null;
+        
+        String pt  = "ST_PointFromText('POINT("+fd.getLon()+
+                " "+fd.getLat()+")',4326)";
+        
+        String sql = "insert into td (name,time,value,"+
+                "water_level_change,time_difference,"+
+                "lon,lat,the_geom) "+
+                "values(?,to_timestamp(?,'Mon DD, YYYY HH:MI AM'),?,?,?,?,?,"+
+                pt+") ";
+        
+        try {
+            stmt = conn.prepareStatement(sql);
+            
+            stmt.setString(1, fd.getName());
+            stmt.setString(2, fd.getTime());
+            stmt.setDouble(3, fd.getValue());
+            stmt.setDouble(4, fd.getWater_level_change());
+            stmt.setDouble(5, fd.getTime_difference());
+            stmt.setDouble(6, fd.getLon());
+            stmt.setDouble(7, fd.getLat());
             
         } catch (SQLException e) {
-            e.printStackTrace();
+           //e.printStackTrace();
         }
         
         try {

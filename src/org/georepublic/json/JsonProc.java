@@ -10,7 +10,10 @@ import org.georepublic.bean.*;
 public class JsonProc {
 
     private String url = null;
-    private  ArrayList <FloodData> floodDataList = new ArrayList<FloodData>();
+    private ArrayList <StreamGauge> asgList  = new ArrayList<StreamGauge>();
+    private ArrayList <StreamGauge> tdList   = new ArrayList<StreamGauge>();
+    private ArrayList <RainGauge>   rainList = new ArrayList<RainGauge>();
+    private ArrayList <WaterGauge>  waterList= new ArrayList<WaterGauge>();
     
     public JsonProc(String url) {
         this.setUrl( url );
@@ -29,9 +32,15 @@ public class JsonProc {
             URL mUrl = new URL(this.url);
 
             JSONObject jo  = (JSONObject)JSON.parse(mUrl.openStream());
+            JSONObject aws = jo.getJSONObject("aws");
             JSONObject asg = jo.getJSONObject("asg");
-         
-            this.setFloodData(asg);
+            JSONObject arg = jo.getJSONObject("arg");
+            JSONObject td  = jo.getJSONObject("td");
+            
+            this.setASGData(asg);
+            this.setAWSData(aws);
+            this.setARGData(arg);
+            this.setTDData(td);
                         
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -41,9 +50,118 @@ public class JsonProc {
         return;
     }
 
-    public void setFloodData(JSONObject asg) {
+    /**
+     * Automated Water Station
+     * @param JSONObject aws
+     */
+    public void setAWSData(JSONObject aws) {
+        Iterator<?> asgKeys = aws.keys();
+        String sensor       = new String();
+        
+        ArrayList<WaterGauge> aList = new ArrayList<WaterGauge>();
+        
+        while( asgKeys.hasNext() ) {
+            sensor = (String)asgKeys.next();
+            
+            try {
+            
+                JSONObject station = aws.getJSONObject( sensor );
+                JSONObject vals    = station.getJSONObject("values");
+                JSONObject temp    = vals.getJSONObject("temp");
+                JSONObject humi    = vals.getJSONObject("humi");
+                JSONObject pres    = vals.getJSONObject("pres");
+                JSONObject rain    = vals.getJSONObject("rain");
+                
+                String stationID    = station.getString("station_id");
+                String stationTime  = station.getString("time");
+                double stationLat   = Double.parseDouble(
+                        station.getString("lat"));
+                double stationLon   = Double.parseDouble(
+                        station.getString("lng"));
+                double stationTemp  = Double.parseDouble(
+                        temp.getString("value") );
+                double stationHumi  = Double.parseDouble(
+                        humi.getString("value") );
+                double stationPres  = Double.parseDouble(
+                        pres.getString("value") );
+                double stationRain  = Double.parseDouble(
+                        rain.getString("value") );
+
+                WaterGauge wg = new WaterGauge();
+                wg.setName(stationID);
+                wg.setTime(stationTime);
+                wg.setTemp(stationTemp);
+                wg.setHumi(stationHumi);
+                wg.setPres(stationPres);
+                wg.setRain(stationRain);
+                wg.setLat(stationLat);
+                wg.setLon(stationLon);
+
+                aList.add(wg);
+            }
+            catch( Exception e ) {
+                //e.printStackTrace();
+            }
+        }        
+        
+        this.setWaterList(aList);
+        
+    }
+    
+    /**
+     * Automated Rain Gauge
+     * @param JSONObject arg
+     */
+    public void setARGData(JSONObject arg) {
+        Iterator<?> asgKeys = arg.keys();
+        String sensor       = new String();
+        
+        ArrayList<RainGauge> rList = new ArrayList<RainGauge>();
+        
+        while( asgKeys.hasNext() ) {
+            sensor = (String)asgKeys.next();
+            
+            try {
+            
+                JSONObject station = arg.getJSONObject( sensor );
+                JSONObject vals    = station.getJSONObject("values");
+                JSONObject rain    = vals.getJSONObject("rain");
+                
+                String stationID    = station.getString("station_id");
+                String stationTime  = station.getString("time");
+                double stationLat   = Double.parseDouble(
+                        station.getString("lat"));
+                double stationLon   = Double.parseDouble(
+                        station.getString("lng"));
+                double stationVal   = Double.parseDouble(
+                        rain.getString("value") );
+
+                RainGauge rg = new RainGauge();
+                rg.setName(stationID);
+                rg.setTime(stationTime);
+                rg.setValue(stationVal);
+                rg.setLat(stationLat);
+                rg.setLon(stationLon);
+                
+                rList.add(rg);
+            }
+            catch( Exception e ) {
+                //e.printStackTrace();
+            }
+        }     
+        
+        this.setRainList(rList);
+    }
+
+    /**
+     * Automated Stream Gauge
+     * @param asg
+     */
+    public void setASGData(JSONObject asg) {
         Iterator<?> asgKeys = asg.keys();
         String sensor       = new String();
+        
+        ArrayList <StreamGauge> flist = new ArrayList<StreamGauge>();
         
         while( asgKeys.hasNext() ) {
             sensor = (String)asgKeys.next();
@@ -62,34 +180,135 @@ public class JsonProc {
                         station.getString("lng"));
                 double stationVal  = Double.parseDouble(
                         wls.getString("value") );
-                            
-                FloodData fd = new FloodData();
+                
+                double water_level_change = Double.parseDouble(
+                        wls.getString("water_level_change"));
+                
+                double time_difference    = Double.parseDouble(
+                        wls.getString("time_difference"));
+                
+                StreamGauge fd = new StreamGauge();
                 fd.setName(stationID);
                 fd.setTime(stationTime);
                 fd.setValue(stationVal);
                 fd.setLat(stationLat);
                 fd.setLon(stationLon);
+                fd.setTime_difference(time_difference);
+                fd.setWater_level_change(water_level_change);
                 
-                this.floodDataList.add(fd);
+                flist.add(fd);
             }
             catch( Exception e ) {
-                //e.printStackTrace();
+               // e.printStackTrace();
             }
-        }        
+        }
+        
+        this.setAsgList(flist);
     }
     
     /**
-     * @return the floodDataList
+     * Tide data
+     * @param JSONObject td
      */
-    public ArrayList<FloodData> getFloodDataList() {
-        return floodDataList;
+    public void setTDData( JSONObject td ) {
+        Iterator<?> asgKeys = td.keys();
+        String sensor       = new String();
+        
+        ArrayList <StreamGauge> flist = new ArrayList<StreamGauge>();
+        
+        while( asgKeys.hasNext() ) {
+            sensor = (String)asgKeys.next();
+            
+            try {
+            
+                JSONObject station = td.getJSONObject( sensor );
+                JSONObject vals    = station.getJSONObject("values");
+                JSONObject tdval   = vals.getJSONObject("td");
+            
+                String stationID   = station.getString("station_id");
+                String stationTime = station.getString("time");
+                double stationLat  = Double.parseDouble(
+                        station.getString("lat"));
+                double stationLon  = Double.parseDouble(
+                        station.getString("lng"));
+                double stationVal  = Double.parseDouble(
+                        tdval.getString("value") );
+                double water_level_change  = Double.parseDouble(
+                        tdval.getString("water_level_change") );
+                double time_difference  = Double.parseDouble(
+                        tdval.getString("time_difference") );
+                            
+                StreamGauge fd = new StreamGauge();
+                fd.setName(stationID);
+                fd.setTime(stationTime);
+                fd.setValue(stationVal);
+                fd.setLat(stationLat);
+                fd.setLon(stationLon);
+                fd.setWater_level_change(water_level_change);
+                fd.setTime_difference(time_difference);
+
+                flist.add(fd);
+            }
+            catch( Exception e ) {
+                e.printStackTrace();
+            }
+        }
+        this.setTdList(flist);
     }
 
     /**
-     * @param floodDataList the floodDataList to set
+     * @return the asgList
      */
-    public void setFloodDataList(ArrayList<FloodData> floodDataList) {
-        this.floodDataList = floodDataList;
+    public ArrayList<StreamGauge> getAsgList() {
+        return asgList;
     }
-    
+
+    /**
+     * @param asgList the asgList to set
+     */
+    public void setAsgList(ArrayList<StreamGauge> asgList) {
+        this.asgList = asgList;
+    }
+
+    /**
+     * @return the tdList
+     */
+    public ArrayList<StreamGauge> getTdList() {
+        return tdList;
+    }
+
+    /**
+     * @param tdList the tdList to set
+     */
+    public void setTdList(ArrayList<StreamGauge> tdList) {
+        this.tdList = tdList;
+    }
+
+    /**
+     * @return the rainList
+     */
+    public ArrayList<RainGauge> getRainList() {
+        return rainList;
+    }
+
+    /**
+     * @param rainList the rainList to set
+     */
+    public void setRainList(ArrayList<RainGauge> rainList) {
+        this.rainList = rainList;
+    }
+
+    /**
+     * @return the waterList
+     */
+    public ArrayList<WaterGauge> getWaterList() {
+        return waterList;
+    }
+
+    /**
+     * @param waterList the waterList to set
+     */
+    public void setWaterList(ArrayList<WaterGauge> waterList) {
+        this.waterList = waterList;
+    }  
 }
