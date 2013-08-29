@@ -7,21 +7,19 @@ PostgreSQL/PostGIS database
 Things to do:
 -------------
 
-1. Create a PostgreSQL Database.
+* Create a PostgreSQL Database.
 
 ```
     createdb flood
 ```
-
-2. Add PostGIS extension
+* Add PostGIS extension
 
 ``` 
     psql flood
     create extension postgis;
     create extension postgis_topology;
 ```    
-
-3. Create the Sensor tables
+* Create the Sensor tables
 
 ```
     create table asg (
@@ -81,8 +79,7 @@ Things to do:
         PRIMARY KEY ( name,time )
     );
 ```
-
-4. Create view tables to access only the latest data
+* Create view tables to access only the latest data
 
 ```
     create view asg_latest as  
@@ -111,14 +108,12 @@ Things to do:
             (select  name,max(time) as time from td group by name) as b 
             on a.name = b.name and a.time = b.time order by a.time desc;        
 ```        
-
-5. Run the jar file that will populate the sensor table
+* Run the jar file that will populate the sensor table
 
 ```
     java -jar dostFlood.jar http://noah.dost.gov.ph/latest/download/station_all
 ```    
-
-6. Create a Cron entry that will execute the program above and
+* Create a Cron entry that will execute the program above and
      populate the sensor table at specific times.
 
-7. View the latest data in QGIS by opening the *_latest tables.   
+* View the latest data in QGIS by opening the *_latest tables.   
