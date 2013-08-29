@@ -14,11 +14,11 @@ Things to do:
 2. Add PostGIS extension
  
     psql flood
-    create extension postgis;
-    create extension postgis_topology;
+    create extension postgis
+    create extension postgis_topology
     
 3. Create the Sensor tables
- 
+ ```
     create table asg (
         id    serial,
         name  text,
@@ -31,7 +31,7 @@ Things to do:
         the_geom geometry('POINT',4326),
         PRIMARY KEY ( name,time )
     );
-
+```
     create table td (
         id    serial,
         name  text,
