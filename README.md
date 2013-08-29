@@ -12,13 +12,13 @@ Things to do:
     createdb flood
 ```
 2. Add PostGIS extension
-```sql 
+``` 
     psql flood
     create extension postgis;
     create extension postgis_topology;
 ```    
 3. Create the Sensor tables
-```sql
+```
     create table asg (
         id    serial,
         name  text,
@@ -32,7 +32,7 @@ Things to do:
         PRIMARY KEY ( name,time )
     );
 ```
-```sql
+```
     create table td (
         id    serial,
         name  text,
@@ -46,7 +46,7 @@ Things to do:
         PRIMARY KEY ( name,time )
     );
 ```
-```sql
+```
     create table arg (
         id    serial,
         name  text,
@@ -58,7 +58,7 @@ Things to do:
         PRIMARY KEY ( name,time )
     );
 ```
-```sql
+```
     create table aws (
         id    serial,
         name  text,
@@ -74,25 +74,25 @@ Things to do:
     );
 ```
 4. Create view tables to access only the latest data
-```sql
+```
     create view asg_latest as  
         select a.* from asg as a inner join 
             (select  name,max(time) as time from asg group by name) as b 
             on a.name = b.name and a.time = b.time order by a.time desc;
 ```
-```sql            
+```       
     create view arg_latest as  
         select a.* from arg as a inner join 
             (select  name,max(time) as time from arg group by name) as b 
             on a.name = b.name and a.time = b.time order by a.time desc;     
 ```
-```sql            
+```            
     create view aws_latest as  
         select a.* from aws as a inner join 
             (select  name,max(time) as time from aws group by name) as b 
             on a.name = b.name and a.time = b.time order by a.time desc;
 ```
-```sql        
+```        
     create view td_latest as  
         select a.* from td as a inner join 
             (select  name,max(time) as time from td group by name) as b 
