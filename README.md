@@ -109,6 +109,8 @@ Things to do:
             (select  name,max(time) as time from td group by name) as b 
             on a.name = b.name and a.time = b.time order by a.time desc;        
 ```        
+* Compile and create a Runnable jar file ( in Eclipse ).
+
 * Run the jar file that will populate the sensor table
 
 ```
