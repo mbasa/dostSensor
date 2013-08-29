@@ -1,8 +1,10 @@
 package org.georepublic.main;
 
+import java.util.ArrayList;
+
 import org.georepublic.json.JsonProc;
-import org.georepublic.bean.FloodData;
-import org.georepublic.db.FloodDb;
+import org.georepublic.bean.*;
+import org.georepublic.db.SensorDb;
 
 public class GetFloodData {
 
@@ -17,12 +19,34 @@ public class GetFloodData {
             System.exit(0);
         }
         
-        JsonProc  jp = new JsonProc( args[0] );
-        FloodData fd = jp.getJsonData();
-        FloodDb   db = new FloodDb();
+        JsonProc jp = new JsonProc( args[0] );
+        jp.getJsonData();
+
+        ArrayList<StreamGauge> fdList = jp.getAsgList();
+        ArrayList<StreamGauge> tdList = jp.getTdList();
+        ArrayList<WaterGauge>  wgList = jp.getWaterList();
+        ArrayList<RainGauge>   rnList = jp.getRainList();
         
-        db.insertFloodData(fd);
+        SensorDb db = new SensorDb();
         
+        for(int i=0;i<fdList.size();i++) {
+            db.insertAsgData(fdList.get(i));
+        }
+        
+        
+        for(int i=0;i<tdList.size();i++) {
+            db.insertTdData(tdList.get(i));
+        }
+        
+        for(int i=0;i<wgList.size();i++) {
+            db.insertAwsData(wgList.get(i));
+        }
+        
+        for(int i=0;i<rnList.size();i++) {
+            db.insertArgData(rnList.get(i));
+        }
+        
+        System.out.println("completed inserting sensor data into the database");
     }
 
 }
