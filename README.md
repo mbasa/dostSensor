@@ -8,13 +8,13 @@ Things to do:
 -------------
 1. Create a PostgreSQL Database.
 
-    createdb flood
+   * createdb flood
  
  2. Add PostGIS extension
  
-    psql flood
-    create extension postgis;
-    create extension postgis_topology;
+    * psql flood
+    * create extension postgis;
+    * create extension postgis_topology;
     
  3. Create the Sensor tables
  
