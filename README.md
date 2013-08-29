@@ -112,7 +112,7 @@ Things to do:
 * Run the jar file that will populate the sensor table
 
 ```
-    java -jar dostFlood.jar http://noah.dost.gov.ph/latest/download/station_all
+    java -jar dostSensor.jar http://noah.dost.gov.ph/latest/download/station_all
 ```    
 * Create a Cron entry that will execute the program above and
      populate the sensor table at specific times.
