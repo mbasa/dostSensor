@@ -6,18 +6,19 @@ PostgreSQL/PostGIS database
 
 Things to do:
 -------------
+
 1. Create a PostgreSQL Database.
 
-    * createdb flood
+    createdb flood
 
 2. Add PostGIS extension
  
-    * psql flood
-    * create extension postgis;
-    * create extension postgis_topology;
+    psql flood
+    create extension postgis;
+    create extension postgis_topology;
     
 3. Create the Sensor tables
-<code> 
+ 
     create table asg (
         id    serial,
         name  text,
@@ -30,7 +31,7 @@ Things to do:
         the_geom geometry('POINT',4326),
         PRIMARY KEY ( name,time )
     );
-</code>
+
     create table td (
         id    serial,
         name  text,
