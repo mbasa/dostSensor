@@ -1,5 +1,11 @@
-Things to do:
+dostSensor
+==========
+Stores DOST Sensor information taken from its Web Service into 
+PostgreSQL/PostGIS database
 
+
+Things to do:
+-------------
 1. Create a PostgreSQL Database.
 
     createdb flood
@@ -62,11 +68,33 @@ Things to do:
         the_geom geometry('POINT',4326),
         PRIMARY KEY ( name,time )
     );
-    
-4. Run the jar file that will populate the sensor table
+
+4. Create view tables to access only the latest data
+
+    create view asg_latest as  
+        select a.* from asg as a inner join 
+            (select  name,max(time) as time from asg group by name) as b 
+            on a.name = b.name and a.time = b.time order by a.time desc;
+            
+    create view arg_latest as  
+        select a.* from arg as a inner join 
+            (select  name,max(time) as time from arg group by name) as b 
+            on a.name = b.name and a.time = b.time order by a.time desc;     
+            
+    create view aws_latest as  
+        select a.* from aws as a inner join 
+            (select  name,max(time) as time from aws group by name) as b 
+            on a.name = b.name and a.time = b.time order by a.time desc;
+        
+    create view td_latest as  
+        select a.* from td as a inner join 
+            (select  name,max(time) as time from td group by name) as b 
+            on a.name = b.name and a.time = b.time order by a.time desc;        
+        
+5. Run the jar file that will populate the sensor table
 
     java -jar dostFlood.jar http://noah.dost.gov.ph/asg/metromanilastonino_wl/
     
-5. Create a Cron entry that will execute the program above and
+6. Create a Cron entry that will execute the program above and
      populate the sensor table at specific times.
    
