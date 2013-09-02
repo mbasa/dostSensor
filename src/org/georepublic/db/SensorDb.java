@@ -219,7 +219,7 @@ public class SensorDb {
                 " "+fd.getLat()+")',4326)";
         
         String sql = "insert into td (name,time,"+
-                "sunrise,sunset,moonrise,moonset"+
+                "sunrise,sunset,moonrise,moonset,"+
                 "value,water_level_change,time_difference,"+
                 "lon,lat,the_geom) "+
                 "values(?,to_timestamp(?,'Mon DD, YYYY HH:MI AM'),"+
@@ -248,7 +248,7 @@ public class SensorDb {
             stmt.executeUpdate(); 
             
         } catch (SQLException e) {
-           //e.printStackTrace();
+          // e.printStackTrace();
         }
         
         try {

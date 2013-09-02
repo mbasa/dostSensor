@@ -227,12 +227,7 @@ public class JsonProc {
                 JSONObject tdval      = vals.getJSONObject("td");
                 JSONArray  sun        = other_data.getJSONArray("sun");
                 JSONArray  moon       = other_data.getJSONArray("moon");
-                 
-                System.out.println(sun.getJSONArray(0).getString(0)+":"+
-                        sun.getJSONArray(0).getString(1) );
-                System.out.println(sun.getJSONArray(1).getString(0)+":"+
-                        sun.getJSONArray(1).getString(1) );
-                
+                                 
                 String stationID   = station.getString("station_id");
                 String stationTime = station.getString("time");
                 
