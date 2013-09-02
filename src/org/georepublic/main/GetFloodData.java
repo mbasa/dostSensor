@@ -23,7 +23,7 @@ public class GetFloodData {
         jp.getJsonData();
 
         ArrayList<StreamGauge> fdList = jp.getAsgList();
-        ArrayList<StreamGauge> tdList = jp.getTdList();
+        ArrayList<TideGauge>   tdList = jp.getTdList();
         ArrayList<WaterGauge>  wgList = jp.getWaterList();
         ArrayList<RainGauge>   rnList = jp.getRainList();
         

@@ -94,6 +94,7 @@ public class SensorDb {
             stmt.setDouble(7, fd.getLat());
             
             stmt.executeUpdate();
+            
         } catch (SQLException e) {
            //e.printStackTrace();
         }
@@ -186,7 +187,7 @@ public class SensorDb {
             stmt.setDouble(8, fd.getLat());
             
             stmt.executeUpdate();
-            stmt.executeUpdate(); 
+            
         } catch (SQLException e) {
            //e.printStackTrace();
         }
@@ -210,18 +211,23 @@ public class SensorDb {
     }
     
 
-
-    public void insertTdData( StreamGauge fd ) {
+    public void insertTdData( TideGauge fd ) {
         Connection conn = this.getConnection();
         PreparedStatement stmt = null;
         
         String pt  = "ST_PointFromText('POINT("+fd.getLon()+
                 " "+fd.getLat()+")',4326)";
         
-        String sql = "insert into td (name,time,value,"+
-                "water_level_change,time_difference,"+
+        String sql = "insert into td (name,time,"+
+                "sunrise,sunset,moonrise,moonset"+
+                "value,water_level_change,time_difference,"+
                 "lon,lat,the_geom) "+
-                "values(?,to_timestamp(?,'Mon DD, YYYY HH:MI AM'),?,?,?,?,?,"+
+                "values(?,to_timestamp(?,'Mon DD, YYYY HH:MI AM'),"+
+                "to_timestamp(?,'Mon DD, YYYY HH:MI AM'),"+
+                "to_timestamp(?,'Mon DD, YYYY HH:MI AM'),"+
+                "to_timestamp(?,'Mon DD, YYYY HH:MI AM'),"+
+                "to_timestamp(?,'Mon DD, YYYY HH:MI AM'),"+
+                "?,?,?,?,?,"+
                 pt+") ";
         
         try {
@@ -229,11 +235,17 @@ public class SensorDb {
             
             stmt.setString(1, fd.getName());
             stmt.setString(2, fd.getTime());
-            stmt.setDouble(3, fd.getValue());
-            stmt.setDouble(4, fd.getWater_level_change());
-            stmt.setDouble(5, fd.getTime_difference());
-            stmt.setDouble(6, fd.getLon());
-            stmt.setDouble(7, fd.getLat());
+            stmt.setString(3, fd.getSunrise());
+            stmt.setString(4, fd.getSunset());
+            stmt.setString(5, fd.getMoonrise());
+            stmt.setString(6, fd.getMoonset());
+            stmt.setDouble(7, fd.getValue());
+            stmt.setDouble(8, fd.getWater_level_change());
+            stmt.setDouble(9, fd.getTime_difference());
+            stmt.setDouble(10,fd.getLon());
+            stmt.setDouble(11,fd.getLat());
+            
+            stmt.executeUpdate(); 
             
         } catch (SQLException e) {
            //e.printStackTrace();

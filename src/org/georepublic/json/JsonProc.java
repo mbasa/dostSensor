@@ -10,10 +10,10 @@ import org.georepublic.bean.*;
 public class JsonProc {
 
     private String url = null;
-    private ArrayList <StreamGauge> asgList  = new ArrayList<StreamGauge>();
-    private ArrayList <StreamGauge> tdList   = new ArrayList<StreamGauge>();
-    private ArrayList <RainGauge>   rainList = new ArrayList<RainGauge>();
-    private ArrayList <WaterGauge>  waterList= new ArrayList<WaterGauge>();
+    private ArrayList <StreamGauge> asgList   = new ArrayList<StreamGauge>();
+    private ArrayList <TideGauge> tdList      = new ArrayList<TideGauge>();
+    private ArrayList <RainGauge>   rainList  = new ArrayList<RainGauge>();
+    private ArrayList <WaterGauge>  waterList = new ArrayList<WaterGauge>();
     
     public JsonProc(String url) {
         this.setUrl( url );
@@ -214,19 +214,28 @@ public class JsonProc {
         Iterator<?> asgKeys = td.keys();
         String sensor       = new String();
         
-        ArrayList <StreamGauge> flist = new ArrayList<StreamGauge>();
+        ArrayList <TideGauge> flist = new ArrayList<TideGauge>();
         
         while( asgKeys.hasNext() ) {
             sensor = (String)asgKeys.next();
             
             try {
             
-                JSONObject station = td.getJSONObject( sensor );
-                JSONObject vals    = station.getJSONObject("values");
-                JSONObject tdval   = vals.getJSONObject("td");
-            
+                JSONObject station    = td.getJSONObject( sensor );
+                JSONObject vals       = station.getJSONObject("values");
+                JSONObject other_data = station.getJSONObject("other_data");
+                JSONObject tdval      = vals.getJSONObject("td");
+                JSONArray  sun        = other_data.getJSONArray("sun");
+                JSONArray  moon       = other_data.getJSONArray("moon");
+                 
+                System.out.println(sun.getJSONArray(0).getString(0)+":"+
+                        sun.getJSONArray(0).getString(1) );
+                System.out.println(sun.getJSONArray(1).getString(0)+":"+
+                        sun.getJSONArray(1).getString(1) );
+                
                 String stationID   = station.getString("station_id");
                 String stationTime = station.getString("time");
+                
                 double stationLat  = Double.parseDouble(
                         station.getString("lat"));
                 double stationLon  = Double.parseDouble(
@@ -237,8 +246,14 @@ public class JsonProc {
                         tdval.getString("water_level_change") );
                 double time_difference  = Double.parseDouble(
                         tdval.getString("time_difference") );
-                            
-                StreamGauge fd = new StreamGauge();
+                
+                String sunrise  = sun.getJSONArray(0).getString(1);
+                String sunset   = sun.getJSONArray(1).getString(1);
+                String moonrise = moon.getJSONArray(0).getString(1);
+                String moonset  = moon.getJSONArray(1).getString(1);
+                
+                TideGauge fd = new TideGauge();
+                
                 fd.setName(stationID);
                 fd.setTime(stationTime);
                 fd.setValue(stationVal);
@@ -246,7 +261,11 @@ public class JsonProc {
                 fd.setLon(stationLon);
                 fd.setWater_level_change(water_level_change);
                 fd.setTime_difference(time_difference);
-
+                fd.setSunrise( sunrise );
+                fd.setSunset( sunset );
+                fd.setMoonrise(moonrise);
+                fd.setMoonset(moonset);
+                
                 flist.add(fd);
             }
             catch( Exception e ) {
@@ -273,14 +292,14 @@ public class JsonProc {
     /**
      * @return the tdList
      */
-    public ArrayList<StreamGauge> getTdList() {
+    public ArrayList<TideGauge> getTdList() {
         return tdList;
     }
 
     /**
      * @param tdList the tdList to set
      */
-    public void setTdList(ArrayList<StreamGauge> tdList) {
+    public void setTdList(ArrayList<TideGauge> tdList) {
         this.tdList = tdList;
     }
 

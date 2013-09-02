@@ -38,15 +38,19 @@ Things to do:
 ```
 
 ```
-    create table td (
-        id    serial,
-        name  text,
-        time  timestamp,
-        value float,
+create table td (
+        id                 serial,
+        name               text,
+        time               timestamp,
+        sunrise            timestamp,
+        sunset             timestamp,
+        moonrise           timestamp,
+        moonset            timestamp,
+        value              float,
         water_level_change float,
         time_difference    float,
-        lon   float,
-        lat   float,
+        lon                float,
+        lat                float,
         the_geom geometry('POINT',4326),
         PRIMARY KEY ( name,time )
     );
